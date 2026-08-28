@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>__SESSION_TITLE__</title>
+  <script>try{const v=localStorage.getItem('df-theme');if(v==='light'||v==='dark')document.documentElement.dataset.theme=v}catch(e){}</script>
+  <style>
+    /* Development Flow stationery — the light table.
+       Theme: Auto follows the system preference; the toggle sets a persistent
+       light/dark override. Daylight: sheets of paper on a studio desk; the
+       selected sheet is inked. Night: the bench darkens and the selected
+       sheet is lit. The live beacon is the one warm accent. */
+    :root {
+      color-scheme: light dark;
+      --bench: light-dark(oklch(95% 0.008 92), oklch(17% 0.007 80));
+      --sheet: light-dark(oklch(98.2% 0.005 95), oklch(23% 0.008 85));
+      --sheet-hover: light-dark(oklch(96.3% 0.007 93), oklch(26% 0.009 85));
+      --line: light-dark(oklch(85% 0.01 90), oklch(34% 0.011 85));
+      --line-soft: light-dark(oklch(90% 0.009 90), oklch(27% 0.009 85));
+      --text: light-dark(oklch(27% 0.014 75), oklch(90% 0.009 92));
+      --muted: light-dark(oklch(50% 0.012 85), oklch(66% 0.011 90));
+      --sel: light-dark(oklch(24% 0.014 75), oklch(95.5% 0.02 95));
+      --sel-ink: light-dark(oklch(96.5% 0.006 95), oklch(22% 0.012 80));
+      --sel-muted: light-dark(oklch(66% 0.012 85), oklch(45% 0.02 85));
+      --sel-panel: light-dark(oklch(28% 0.012 80), oklch(92% 0.012 95));
+      --live: light-dark(oklch(55% 0.12 70), oklch(78% 0.13 80));
+      --live-glow: light-dark(oklch(55% 0.12 70 / .07), oklch(78% 0.13 80 / .07));
+      --live-halo: light-dark(oklch(55% 0.12 70 / .18), oklch(78% 0.13 80 / .18));
+      --sel-shadow: light-dark(oklch(24% 0.014 75 / .22), oklch(95.5% 0.02 95 / .22));
+      --sel-line: light-dark(oklch(96.5% 0.006 95 / .25), oklch(22% 0.012 80 / .25));
+      --display: "New York", ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+      --sans: "Avenir Next", "Avenir", "Segoe UI Variable Text", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --mono: "SF Mono", ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+    :root[data-theme="light"] { color-scheme: light; }
+    :root[data-theme="dark"] { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      background:
+        radial-gradient(120% 55% at 50% -10%, var(--live-glow), transparent 62%),
+        var(--bench);
+      font: 400 1rem/1.55 var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Session slate */
+    header {
+      display: flex; align-items: center; justify-content: space-between; gap: 1.2rem;
+      padding: .8rem clamp(1rem, 4vw, 3rem); border-bottom: 1px solid var(--line-soft);
+      background: color-mix(in srgb, var(--bench) 86%, transparent); backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 2;
+    }
+    .kicker { font: 500 .58rem/1.5 var(--mono); text-transform: uppercase; letter-spacing: .2em; color: var(--muted); }
+    .title { font: 600 .98rem/1.3 var(--display); letter-spacing: .005em; margin-top: .1rem; }
+    .header-tools { display: inline-flex; align-items: center; gap: 1rem; }
+    #status { display: inline-flex; align-items: center; gap: .6em; font: 500 .66rem/1 var(--mono); text-transform: uppercase; letter-spacing: .13em; color: var(--muted); white-space: nowrap; }
+    .beacon { width: .55rem; height: .55rem; border-radius: 50%; background: var(--muted); flex: none; }
+    #status.live .beacon { background: var(--live); box-shadow: 0 0 0 3px var(--live-halo); animation: pulse 2.4s ease-in-out infinite; }
+    #status.paused .beacon { animation: none; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+
+    /* Theme switch — part of the bench chrome */
+    .theme-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+    .theme-switch button {
+      appearance: none; background: none; border: 0; color: var(--muted); cursor: pointer;
+      font: 600 .56rem/1 var(--mono); text-transform: uppercase; letter-spacing: .14em;
+      padding: .42em .65em .36em;
+    }
+    .theme-switch button + button { border-left: 1px solid var(--line); }
+    .theme-switch button[aria-pressed="true"] { background: var(--text); color: var(--bench); }
+    .theme-switch button:focus-visible { outline: 2px solid var(--live); outline-offset: -2px; }
+
+    main { width: min(71rem, calc(100% - 2rem)); margin: 0 auto; padding: clamp(1.4rem, 4.5vw, 3.2rem) 0 4rem; }
+    #screen.fresh { animation: settle .26s cubic-bezier(.22, 1, .36, 1); }
+    @keyframes settle { from { opacity: 0; transform: translateY(6px); } }
+
+    .waiting { min-height: 55vh; display: grid; place-items: center; text-align: center; }
+    .waiting p {
+      font: 500 .72rem/1.9 var(--mono); text-transform: uppercase; letter-spacing: .18em; color: var(--muted);
+      border: 1px dashed var(--line); border-radius: 10px; padding: 1.5rem 2.2rem; margin: 0;
+    }
+
+    /* Fragment vocabulary — serif headings inside agent-authored screens */
+    h1, h2, h3 { font-family: var(--display); line-height: 1.18; letter-spacing: -.008em; margin-top: 0; }
+    p.subtitle, .muted { color: var(--muted); }
+    .options, .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr)); gap: .9rem; }
+    .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+    .panel, .mockup { border: 1px solid var(--line); border-radius: 10px; padding: 1.1rem; background: var(--sheet); }
+    .mockup { padding: .55rem; }
+
+    /* Sheets on the table — choosing inks (day) or lights (night) the sheet */
+    [data-choice] {
+      position: relative; cursor: pointer;
+      border: 1px solid var(--line); border-radius: 10px; padding: 1.15rem 2.7rem 1.15rem 1.15rem;
+      background: var(--sheet);
+      transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    [data-choice]:hover { background: var(--sheet-hover); border-color: var(--muted); }
+    [data-choice]:focus-visible { outline: 2px solid var(--live); outline-offset: 2px; }
+    [data-choice]::before {
+      content: ""; position: absolute; top: .95rem; right: 1rem; width: .85rem; height: .85rem;
+      border: 1.5px solid var(--muted); border-radius: 50%;
+      transition: background .15s ease, border-color .15s ease, border-radius .15s ease;
+    }
+    [data-choice]::after {
+      content: ""; position: absolute; top: 2.2rem; right: 1rem;
+      font: 600 .52rem/1 var(--mono); letter-spacing: .16em; color: var(--sel-muted);
+    }
+    [data-multiselect] [data-choice]::before { border-radius: 3px; }
+    [data-choice][aria-pressed="true"] {
+      background: var(--sel); border-color: var(--sel); color: var(--sel-ink);
+      box-shadow: 0 14px 40px var(--sel-shadow);
+    }
+    [data-choice][aria-pressed="true"]::before {
+      content: "✓"; display: grid; place-items: center;
+      border-color: var(--sel-ink); background: var(--sel-ink); color: var(--sel);
+      font: 700 .62rem/1 var(--mono); border-radius: 50%;
+    }
+    [data-multiselect] [data-choice][aria-pressed="true"]::before { border-radius: 3px; }
+    [data-choice][aria-pressed="true"]::after { content: "SELECTED"; }
+    [data-choice][aria-pressed="true"] .muted,
+    [data-choice][aria-pressed="true"] p.subtitle { color: var(--sel-muted); }
+    [data-choice][aria-pressed="true"] .panel,
+    [data-choice][aria-pressed="true"] .mockup { background: var(--sel-panel); border-color: var(--sel-line); }
+
+    @media (max-width: 700px) {
+      .split { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; gap: .5rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #status.live .beacon { animation: none; }
+      #screen.fresh { animation: none; }
+      [data-choice], [data-choice]::before { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="slate">
+      <div class="kicker">Development Flow · Visual Companion</div>
+      <div class="title">__SESSION_TITLE__</div>
+    </div>
+    <div class="header-tools">
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-set-theme="">Auto</button><button type="button" data-set-theme="light">Light</button><button type="button" data-set-theme="dark">Dark</button>
+      </div>
+      <span id="status" class="live"><span class="beacon"></span><span id="status-text">Connecting…</span></span>
+    </div>
+  </header>
+  <main id="screen"><div class="waiting"><p>Waiting for the first screen</p></div></main>
+  <script>
+    const key = "__SESSION_KEY__";
+    let version = -1;
+    const status = document.querySelector('#status');
+    const statusText = document.querySelector('#status-text');
+    const screen = document.querySelector('#screen');
+
+    async function refresh() {
+      try {
+        const response = await fetch(`/api/latest?key=${encodeURIComponent(key)}`, {cache: 'no-store'});
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        status.className = 'live';
+        statusText.textContent = data.name ?? 'Waiting for a screen';
+        if (data.version !== version) {
+          const first = version === -1;
+          version = data.version;
+          screen.innerHTML = data.html || '<div class="waiting"><p>Waiting for the first screen</p></div>';
+          if (!first || data.html) {
+            screen.classList.remove('fresh');
+            void screen.offsetWidth;
+            screen.classList.add('fresh');
+          }
+          bindChoices();
+        }
+      } catch (error) {
+        status.className = 'paused';
+        statusText.textContent = 'Paused — reconnecting';
+      }
+    }
+
+    function bindChoices() {
+      screen.querySelectorAll('[data-choice]').forEach(element => {
+        element.setAttribute('role','button');
+        element.setAttribute('tabindex','0');
+        element.setAttribute('aria-pressed', element.getAttribute('aria-pressed') === 'true' ? 'true' : 'false');
+        const choose = async () => {
+          const multi = Boolean(element.closest('[data-multiselect]'));
+          const wasPressed = element.getAttribute('aria-pressed') === 'true';
+          if (!multi) screen.querySelectorAll('[data-choice]').forEach(node => node.setAttribute('aria-pressed','false'));
+          const selected = multi ? !wasPressed : true;
+          element.setAttribute('aria-pressed', String(selected));
+          await fetch(`/api/events?key=${encodeURIComponent(key)}`, {method: 'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'choice',choice:element.dataset.choice,selected,text:element.innerText.trim().slice(0,500)})});
+        };
+        element.addEventListener('click', choose);
+        element.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); choose(); } });
+      });
+    }
+
+    (() => {
+      const root = document.documentElement;
+      const buttons = [...document.querySelectorAll('[data-set-theme]')];
+      const sync = () => {
+        const current = root.dataset.theme || '';
+        buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.setTheme === current)));
+      };
+      buttons.forEach(button => button.addEventListener('click', () => {
+        const value = button.dataset.setTheme;
+        try {
+          if (value) { root.dataset.theme = value; localStorage.setItem('df-theme', value); }
+          else { delete root.dataset.theme; localStorage.removeItem('df-theme'); }
+        } catch (error) { /* storage unavailable: keep the session-local override */ }
+        sync();
+      }));
+      sync();
+    })();
+
+    refresh();
+    let timer = setInterval(refresh, 700);
+    document.addEventListener('visibilitychange', () => {
+      clearInterval(timer);
+      if (!document.hidden) { refresh(); timer = setInterval(refresh, 700); }
+    });
+  </script>
+</body>
+</html>

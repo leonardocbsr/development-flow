@@ -1,0 +1,18 @@
+{
+  "name": "development-flow",
+  "description": "Commitment-aware software development skills",
+  "owner": {
+    "name": "Leonardo C. Martins"
+  },
+  "plugins": [
+    {
+      "name": "development-flow",
+      "description": "Development workflow for Research Spikes, PoCs, MVPs, and Production systems",
+      "version": "0.1.0",
+      "source": "./plugins/development-flow",
+      "author": {
+        "name": "Leonardo C. Martins"
+      }
+    }
+  ]
+}

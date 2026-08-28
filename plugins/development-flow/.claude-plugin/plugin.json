@@ -1,0 +1,13 @@
+{
+  "name": "development-flow",
+  "description": "Commitment-aware development workflow for Research Spikes, PoCs, MVPs, and Production systems",
+  "version": "0.1.0",
+  "author": {
+    "name": "Leonardo C. Martins",
+    "url": "https://github.com/leonardocbsr"
+  },
+  "homepage": "https://github.com/leonardocbsr/development-flow#readme",
+  "repository": "https://github.com/leonardocbsr/development-flow",
+  "license": "MIT",
+  "keywords": ["skills", "development", "workflow", "tdd", "research", "planning", "review"]
+}

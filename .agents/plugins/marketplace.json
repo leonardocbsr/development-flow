@@ -1,0 +1,20 @@
+{
+  "name": "development-flow",
+  "interface": {
+    "displayName": "Development Flow"
+  },
+  "plugins": [
+    {
+      "name": "development-flow",
+      "source": {
+        "source": "local",
+        "path": "./plugins/development-flow"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

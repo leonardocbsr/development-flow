@@ -1,0 +1,27 @@
+{
+  "name": "development-flow",
+  "version": "0.1.0",
+  "description": "A commitment-aware software development workflow for research spikes, proofs of concept, MVPs, and production systems.",
+  "author": {
+    "name": "Leonardo C. Martins",
+    "url": "https://github.com/leonardocbsr"
+  },
+  "homepage": "https://github.com/leonardocbsr/development-flow#readme",
+  "repository": "https://github.com/leonardocbsr/development-flow",
+  "license": "MIT",
+  "keywords": ["development", "workflow", "tdd", "research", "planning", "code-review", "visual-design", "executive-review"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Development Flow",
+    "shortDescription": "Match engineering rigor to what you are building.",
+    "longDescription": "Choose between Research Spike, PoC, MVP, and Production lanes; research before implementation; plan by milestones and stable contracts; use controlled sequential writer handoffs only under context pressure; keep explorers and reviewers read-only; and produce evidence-backed executive reviews.",
+    "developerName": "Leonardo C. Martins",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "Choose the right development lane for this work.",
+      "Research and design this before implementation.",
+      "Review whether these tests protect stable contracts."
+    ]
+  }
+}

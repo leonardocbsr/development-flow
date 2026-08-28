@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Executive Review</title>
+  <script>try{const v=localStorage.getItem('df-theme');if(v==='light'||v==='dark')document.documentElement.dataset.theme=v}catch(e){}</script>
+  <style>
+    /* Development Flow stationery — certification dossier.
+       Theme: Auto follows the system preference; the toggle sets a persistent
+       light/dark override. Palettes live in native light-dark(), so the used
+       side follows the effective color-scheme with no duplicated blocks.
+       The status vocabulary (confirmed / inferred / hypothesis / unknown /
+       blocker) is the only chromatic element on the page. */
+    :root {
+      color-scheme: light dark;
+      --paper: light-dark(oklch(97.4% 0.006 92), oklch(19.5% 0.007 80));
+      --ink: light-dark(oklch(29% 0.014 75), oklch(90.5% 0.009 92));
+      --muted: light-dark(oklch(51% 0.012 85), oklch(67% 0.011 90));
+      --line: light-dark(oklch(87.5% 0.009 90), oklch(28% 0.009 85));
+      --rule: var(--ink);
+      --confirmed: light-dark(oklch(51% 0.11 155), oklch(76% 0.13 155));
+      --inferred: light-dark(oklch(48% 0.13 262), oklch(74% 0.11 262));
+      --hypothesis: light-dark(oklch(55% 0.11 75), oklch(78% 0.12 80));
+      --unknown: light-dark(oklch(55% 0.012 90), oklch(69% 0.012 90));
+      --blocker: light-dark(oklch(50% 0.16 30), oklch(71% 0.15 30));
+      --display: "New York", ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+      --mono: "SF Mono", ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+    :root[data-theme="light"] { color-scheme: light; }
+    :root[data-theme="dark"] { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--paper); color: var(--ink);
+      font: 400 1.02rem/1.62 var(--display);
+      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    }
+    main { width: min(66rem, calc(100% - 2.75rem)); margin: 0 auto; padding: clamp(1.6rem, 5vw, 4.2rem) 0 4.5rem; }
+
+    /* Masthead — double rule, eyebrow, display title, lede */
+    .masthead { border-top: 3px solid var(--rule); padding-top: .65rem; }
+    .masthead::before { content: ""; display: block; border-top: 1px solid var(--rule); margin-top: .22rem; }
+    .eyebrow-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font: 500 .68rem/1.5 var(--mono); text-transform: uppercase; letter-spacing: .18em;
+      color: var(--muted); margin-top: .8rem;
+    }
+    .eyebrow-tools { display: inline-flex; align-items: center; gap: 1rem; }
+    h1 {
+      font: 700 clamp(2.15rem, 6vw, 3.9rem)/1.04 var(--display);
+      letter-spacing: -.018em; margin: 1rem 0 1.05rem; max-width: 21ch; text-wrap: balance;
+    }
+    .lede {
+      font: 400 clamp(1.06rem, 1.9vw, 1.26rem)/1.55 var(--display);
+      font-style: italic; max-width: 60ch; margin: 0; color: var(--ink);
+    }
+
+    /* Theme switch — part of the dossier chrome */
+    .theme-switch { display: inline-flex; border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; }
+    .theme-switch button {
+      appearance: none; background: none; border: 0; color: var(--muted); cursor: pointer;
+      font: 600 .56rem/1 var(--mono); text-transform: uppercase; letter-spacing: .14em;
+      padding: .42em .65em .36em;
+    }
+    .theme-switch button + button { border-left: 1px solid var(--line); }
+    .theme-switch button[aria-pressed="true"] { background: var(--rule); color: var(--paper); }
+    .theme-switch button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+    /* Gate — certification stamp, status chip, lane marker */
+    .gate { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin: 1.9rem 0 0; }
+    .stamp {
+      font: 700 .76rem/1 var(--mono); text-transform: uppercase; letter-spacing: .2em;
+      padding: .58rem .9rem .52rem; border: 1.5px solid var(--rule); border-radius: 2px;
+      outline: 1px solid var(--rule); outline-offset: 3px;
+    }
+    .lane { font: 500 .7rem/1 var(--mono); text-transform: uppercase; letter-spacing: .16em; color: var(--muted); }
+    .lane b { color: var(--ink); font-weight: 600; }
+
+    /* Status chips — glyphs carry the semantics */
+    .st-confirmed { --st: var(--confirmed); } .st-inferred { --st: var(--inferred); }
+    .st-hypothesis { --st: var(--hypothesis); } .st-unknown { --st: var(--unknown); }
+    .chip {
+      font: 500 .64rem/1 var(--mono); text-transform: uppercase; letter-spacing: .13em;
+      color: var(--st, var(--unknown)); display: inline-flex; align-items: center; gap: .5em; white-space: nowrap;
+    }
+    .chip .dot { width: .58em; height: .58em; border-radius: 50%; border: 1.5px solid currentColor; flex: none; }
+    .st-confirmed .dot { background: currentColor; }
+    .st-inferred .dot { background: linear-gradient(90deg, currentColor 0 50%, transparent 50%); }
+    .st-unknown .dot { border-style: dotted; }
+
+    /* Snapshot — full-width spec strip */
+    .ledger {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+      gap: 0; margin-top: 2.4rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    }
+    .ledger > div { padding: .8rem 1.2rem .85rem 0; border-right: 1px solid var(--line); }
+    .ledger > div:last-child { border-right: 0; }
+    .ledger dt { font: 500 .6rem/1.5 var(--mono); text-transform: uppercase; letter-spacing: .15em; color: var(--muted); }
+    .ledger dd { margin: .2rem 0 0; font: 500 .8rem/1.5 var(--mono); overflow-wrap: anywhere; }
+
+    /* Content — ruled sections in a two-column broadsheet */
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 3.6rem; row-gap: 2.7rem; margin-top: 2.7rem; }
+    section { min-width: 0; }
+    section.wide { grid-column: 1 / -1; }
+    h2 {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin: 0 0 .55rem;
+      border-top: 2px solid var(--rule); padding-top: .5rem;
+      font: 600 .7rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .17em;
+    }
+    h2 .count { color: var(--muted); font-weight: 500; }
+    section.blockers h2 .count { color: var(--blocker); }
+    .empty { color: var(--muted); font-style: italic; margin: .25rem 0 0; }
+
+    /* Lists — hanging mark column */
+    ul.items { list-style: none; margin: 0; padding: 0; }
+    ul.items li {
+      display: grid; grid-template-columns: auto 1fr; gap: .7rem; align-items: baseline;
+      padding: .55rem 0; border-top: 1px solid var(--line);
+    }
+    ul.items li:first-child { border-top: 0; padding-top: .15rem; }
+    ul.items li:last-child { padding-bottom: .1rem; }
+    .mark { font: 600 .78rem/1.6 var(--mono); color: var(--muted); }
+    section.blockers .mark { color: var(--blocker); }
+    section.blockers li { font-weight: 500; }
+    li .chip { margin-left: .65em; position: relative; top: -.12em; }
+
+    /* Evidence — claim, proof, proven scope */
+    .evidence article { padding: .8rem 0; border-top: 1px solid var(--line); display: grid; gap: .3rem; }
+    .evidence article:first-of-type { border-top: 0; padding-top: .15rem; }
+    .evidence .claim { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; font: 600 .84rem/1.5 var(--mono); }
+    .evidence .proof { margin: 0; }
+    .evidence .proves { margin: 0; font: 500 .66rem/1.6 var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+    .evidence .proves b { font-weight: 500; color: var(--ink); text-transform: none; letter-spacing: 0; }
+
+    /* Next steps — numbered sequence, first is immediate */
+    ol.steps { list-style: none; margin: 0; padding: 0; counter-reset: step; }
+    ol.steps li { counter-increment: step; display: grid; grid-template-columns: auto 1fr; gap: 1rem; padding: .6rem 0; border-top: 1px solid var(--line); }
+    ol.steps li:first-child { border-top: 0; padding-top: .15rem; }
+    ol.steps li::before { content: counter(step, decimal-leading-zero); font: 600 .92rem/1.65 var(--mono); color: var(--muted); }
+    ol.steps li:first-child::before { color: var(--ink); }
+    .now {
+      font: 600 .58rem/1 var(--mono); text-transform: uppercase; letter-spacing: .15em;
+      border: 1px solid var(--rule); border-radius: 2px; padding: .24em .5em .2em;
+      margin-left: .7em; position: relative; top: -.2em; white-space: nowrap;
+    }
+
+    footer { margin-top: 3.2rem; border-top: 1px solid var(--line); padding-top: .65rem; font: 400 .7rem/1.7 var(--mono); color: var(--muted); }
+    footer b { font-weight: 600; text-transform: uppercase; letter-spacing: .15em; color: var(--ink); }
+
+    /* Entrance — one staggered reveal */
+    .reveal { opacity: 0; transform: translateY(8px); animation: rise .55s cubic-bezier(.22, 1, .36, 1) forwards; animation-delay: calc(var(--i) * 70ms); }
+    @keyframes rise { to { opacity: 1; transform: none; } }
+
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; row-gap: 2.2rem; }
+      .eyebrow-row { flex-direction: column; align-items: flex-start; gap: .6rem; }
+      .ledger > div { border-right: 0; border-bottom: 1px solid var(--line); padding: .65rem 0; }
+      .ledger > div:last-child { border-bottom: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { .reveal { animation: none; opacity: 1; transform: none; } }
+    @media print {
+      :root { color-scheme: light; --paper: #fff; --ink: #111; --muted: #555; --line: #ccc; --rule: #111; }
+      body { font-size: .92rem; }
+      main { width: 100%; }
+      .theme-switch { display: none; }
+      section, .evidence article { break-inside: avoid; }
+      .reveal { animation: none; opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <main id="app"></main>
+  <script src="review-data.js"></script>
+  <script>
+    const data = window.EXECUTIVE_REVIEW;
+    const STATUSES = ['confirmed', 'inferred', 'hypothesis', 'unknown'];
+    const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const safeHref = value => {
+      if (!value) return '';
+      try {
+        const resolved = new URL(String(value), window.location.href);
+        return ['http:', 'https:', 'file:'].includes(resolved.protocol) ? escapeHtml(String(value)) : '';
+      } catch (error) { return ''; }
+    };
+    const label = value => String(value).replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, char => char.toUpperCase());
+    const chip = status => STATUSES.includes(status) ? `<span class="chip st-${status}"><i class="dot"></i>${status}</span>` : '';
+    const normalize = item => typeof item === 'string' ? {text: item} : (item ?? {});
+    const linkedText = (item, fallback) => {
+      const text = escapeHtml(item.text ?? item.claim ?? item.name ?? fallback);
+      const href = safeHref(item.href);
+      return href ? `<a href="${href}">${text}</a>` : text;
+    };
+
+    const list = (values, mark = '—') => values?.length
+      ? `<ul class="items">${values.map(raw => {
+          const item = normalize(raw);
+          const content = linkedText(item, JSON.stringify(raw));
+          return `<li><span class="mark">${mark}</span><span>${content}${chip(item.status)}</span></li>`;
+        }).join('')}</ul>`
+      : '<p class="empty">None recorded.</p>';
+
+    const evidence = values => values?.length
+      ? `<div class="evidence">${values.map(item => `
+          <article>
+            <div class="claim"><span>${linkedText(item, 'Evidence')}</span>${chip(item.status)}</div>
+            <p class="proof">${escapeHtml(item.proof ?? item.result ?? item.text ?? '')}</p>
+            ${item.proves ? `<p class="proves">Proves — <b>${escapeHtml(item.proves)}</b></p>` : ''}
+          </article>`).join('')}</div>`
+      : '<p class="empty">No evidence recorded.</p>';
+
+    const steps = values => values?.length
+      ? `<ol class="steps">${values.map((raw, index) => {
+          const item = normalize(raw);
+          return `<li><span>${linkedText(item, JSON.stringify(raw))}${index === 0 ? '<span class="now">Immediate</span>' : ''}${chip(item.status)}</span></li>`;
+        }).join('')}</ol>`
+      : '<p class="empty">None recorded.</p>';
+
+    const section = (title, body, options = {}) => `
+      <section class="${options.cls ?? ''} reveal" style="--i:${options.i ?? 0}"><h2><span>${title}</span>${options.count != null ? `<span class="count">${options.count}</span>` : ''}</h2>${body}</section>`;
+
+    const statusLevel = STATUSES.includes(data.statusLevel) ? data.statusLevel : 'unknown';
+    document.title = `Executive Review — ${data.title}`;
+    document.querySelector('#app').innerHTML = `
+      <header class="masthead reveal" style="--i:0">
+        <div class="eyebrow-row">
+          <span>Development Flow · Executive Review</span>
+          <span class="eyebrow-tools">
+            <span>${escapeHtml(data.date)}</span>
+            <div class="theme-switch" role="group" aria-label="Theme">
+              <button type="button" data-set-theme="">Auto</button><button type="button" data-set-theme="light">Light</button><button type="button" data-set-theme="dark">Dark</button>
+            </div>
+          </span>
+        </div>
+        <h1>${escapeHtml(data.title)}</h1>
+        <p class="lede">${escapeHtml(data.summary)}</p>
+        <div class="gate">
+          <span class="stamp">${escapeHtml(data.status)}</span>
+          ${chip(statusLevel)}
+          <span class="lane">Lane · <b>${escapeHtml(data.lane)}</b></span>
+        </div>
+      </header>
+      <div class="ledger reveal" style="--i:1">${Object.entries(data.snapshot ?? {}).map(([key, value]) => `<div><dt>${escapeHtml(label(key))}</dt><dd>${escapeHtml(value)}</dd></div>`).join('')}</div>
+      <div class="grid">
+        ${section('Delivered', list(data.delivered), {count: data.delivered?.length ?? 0, i: 2})}
+        ${section('In progress', list(data.inProgress, '□'), {count: data.inProgress?.length ?? 0, i: 2})}
+        ${section('Evidence', evidence(data.evidence), {cls: 'wide', count: data.evidence?.length ?? 0, i: 3})}
+        ${section('Decisions', list(data.decisions), {count: data.decisions?.length ?? 0, i: 4})}
+        ${section('Blockers', list(data.blockers, '▲'), {cls: 'blockers', count: data.blockers?.length ?? 0, i: 4})}
+        ${section('Risks & unknowns', list(data.risks, '◌'), {cls: 'wide', count: data.risks?.length ?? 0, i: 5})}
+        ${section('Next steps', steps(data.nextSteps), {cls: 'wide', count: data.nextSteps?.length ?? 0, i: 6})}
+      </div>
+      <footer class="reveal" style="--i:7"><b>Provenance</b> — ${escapeHtml(data.sourceNote)}</footer>`;
+
+    (() => {
+      const root = document.documentElement;
+      const buttons = [...document.querySelectorAll('[data-set-theme]')];
+      const sync = () => {
+        const current = root.dataset.theme || '';
+        buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.setTheme === current)));
+      };
+      buttons.forEach(button => button.addEventListener('click', () => {
+        const value = button.dataset.setTheme;
+        try {
+          if (value) { root.dataset.theme = value; localStorage.setItem('df-theme', value); }
+          else { delete root.dataset.theme; localStorage.removeItem('df-theme'); }
+        } catch (error) { /* storage unavailable: keep the session-local override */ }
+        sync();
+      }));
+      sync();
+    })();
+  </script>
+</body>
+</html>

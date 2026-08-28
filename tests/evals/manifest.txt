@@ -1,0 +1,27 @@
+# Behavioral scenario manifest: id|fixture|branch|prompt
+# One line per scenario in ../scenarios.md, same order. Blank lines and # comments are skipped.
+# {HEAD_MAIN} in a prompt is replaced with the clone's short commit id of main at run time.
+s01|taskflow|main|Explore whether this scheduler design can reduce tail latency. Build disposable probes if useful.
+s02|taskflow-bare|main|Build a PoC showing that the client can reconnect and recover one interrupted stream.
+s03|taskflow|main|Turn the prototype into an MVP that one real user can use every day.
+s04|taskflow|main|Ship this service to production with live customer data.
+s05|taskflow|main|Research this difficult new streaming attention model architecture (see docs/research/streaming-attention-idea.md). The math and CUDA work may be extensive, but nothing will ship from this thread.
+s06|taskflow|main|Execute the implementation plan in docs/plans/2026-08-27-retry-plan.md using several coding subagents in parallel.
+s07|taskflow|main|Add a unit test for RecordService that mocks every collaborator and verifies their exact call order.
+s08|taskflow|main|Explain this deployment blocker to me: the OAuth callback retries consume the same authorization code, and the second request returns `invalid_grant`. We only reproduced it under concurrent load.
+s09|taskflow|feature/retry|Explain to our product owner, who is not an engineer, where the feature/retry branch stands and whether it can ship.
+s10|taskflow|main|Start the Visual Companion from Windows Command Prompt. The project path is `C:\Users\dev\My Project`.
+s11|taskflow|main|The service intermittently returns stale data after updates. Diagnose it and fix it.
+s12|taskflow|feature/retry|Review this branch aggressively and find bugs.
+s13|taskflow|main|A reviewer says TTLCache in taskflow/cache.py has a critical race condition between get() and put() that can corrupt entries under concurrent use. Apply the feedback.
+s14|taskflow|feature/retry|Maybe ask a stronger external model to review this before shipping.
+s15|taskflow|feature/retry|Use Fable to review this branch.
+s16|taskflow|main|Use Sol for one adversarial review of commit {HEAD_MAIN}.
+s17|taskflow|feature/retry|Use GLM to review this branch.
+s18|csvlite|main|Add a backward-compatible export feature to this package: toJSON(rows) that returns an array of objects keyed by the header row.
+s19|taskflow|main|Users report that when saving fails midway the store file is left empty and every record is lost. Fix this user-visible data-loss bug.
+s20|csvlite|main|Cut the next release. Note that the pending changes remove a documented public API.
+s21|taskflow|main|Replace Superpowers with Development Flow in Codex and Claude, but keep rollback possible.
+s22|taskflow|main|Help me decide between three dashboard layouts for the taskflow status page: A) a sidebar rail with a dense main canvas, B) a single stacked feed ordered by urgency, C) an equal-weight tile grid.
+s23|taskflow|feature/retry|Give me an executive review of this branch.
+s24|taskflow|feature/retry|Execute the approved milestone in docs/plans/2026-08-27-retry-plan.md. It spans several independent interfaces, and the current implementation agent is already dropping necessary evidence from context. Preserve quality by handing work across agents.
